@@ -25,6 +25,8 @@ class PatchEvent extends Event {
   */
  protected $description;
 
+  protected $installPath;
+
   /**
    * Constructs a PatchEvent object.
    *
@@ -32,12 +34,15 @@ class PatchEvent extends Event {
    * @param PackageInterface $package
    * @param string $url
    * @param string $description
+   * @param string $install_path
+   *   The installation path used for applying the patch to.
    */
-  public function __construct($eventName, PackageInterface $package, $url, $description) {
+  public function __construct($eventName, PackageInterface $package, $url, $description, $install_path) {
     parent::__construct($eventName);
     $this->package = $package;
     $this->url = $url;
     $this->description = $description;
+    $this->installPath = $install_path;
   }
 
   /**
@@ -65,6 +70,15 @@ class PatchEvent extends Event {
    */
   public function getDescription() {
     return $this->description;
+  }
+
+  public function getInstallPath() {
+    return $this->installPath;
+  }
+
+  public function setInstallPath($path) {
+    $this->installPath = $path;
+    return $this;
   }
 
 }

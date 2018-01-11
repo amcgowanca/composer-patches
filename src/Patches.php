@@ -36,7 +36,7 @@ class Patches implements PluginInterface, EventSubscriberInterface {
    */
   protected $io;
   /**
-   * @var EventDispatcher $eventDispatcher
+   * @var \Composer\EventDispatcher\EventDispatcher $eventDispatcher
    */
   protected $eventDispatcher;
   /**
@@ -299,9 +299,11 @@ class Patches implements PluginInterface, EventSubscriberInterface {
     foreach ($this->patches[$package_name] as $description => $url) {
       $this->io->write('    <info>' . $url . '</info> (<comment>' . $description. '</comment>)');
       try {
-        $this->eventDispatcher->dispatch(NULL, new PatchEvent(PatchEvents::PRE_PATCH_APPLY, $package, $url, $description));
+        $patch_event = new PatchEvent(PatchEvents::PRE_PATCH_APPLY, $package, $url, $description, $install_path);
+        $this->eventDispatcher->dispatch(NULL, $patch_event);
+        $install_path = $patch_event->getInstallPath();
         $this->getAndApplyPatch($downloader, $install_path, $url);
-        $this->eventDispatcher->dispatch(NULL, new PatchEvent(PatchEvents::POST_PATCH_APPLY, $package, $url, $description));
+        $this->eventDispatcher->dispatch(NULL, new PatchEvent(PatchEvents::POST_PATCH_APPLY, $package, $url, $description, $install_path));
         $extra['patches_applied'][$description] = $url;
       }
       catch (\Exception $e) {
