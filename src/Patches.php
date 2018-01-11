@@ -300,6 +300,9 @@ class Patches implements PluginInterface, EventSubscriberInterface {
       $this->io->write('    <info>' . $url . '</info> (<comment>' . $description. '</comment>)');
       try {
         $this->eventDispatcher->dispatch(NULL, new PatchEvent(PatchEvents::PRE_PATCH_APPLY, $package, $url, $description));
+        if ($install_path == 'docroot/core') {
+          $install_path = 'docroot';
+        }
         $this->getAndApplyPatch($downloader, $install_path, $url);
         $this->eventDispatcher->dispatch(NULL, new PatchEvent(PatchEvents::POST_PATCH_APPLY, $package, $url, $description));
         $extra['patches_applied'][$description] = $url;
